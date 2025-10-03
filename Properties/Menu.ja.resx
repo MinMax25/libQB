@@ -135,9 +135,6 @@
   <data name="Help" xml:space="preserve">
     <value>ヘルプ (_H)</value>
   </data>
-  <data name="Help_About" xml:space="preserve">
-    <value>QBDrumMap2について</value>
-  </data>
   <data name="Help_Document" xml:space="preserve">
     <value>ドキュメント</value>
   </data>

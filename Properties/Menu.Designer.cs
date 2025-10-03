@@ -115,15 +115,6 @@ namespace libQB.Properties {
         }
         
         /// <summary>
-        ///   About QBDrumMap2 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string Help_About {
-            get {
-                return ResourceManager.GetString("Help_About", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Document に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Help_Document {

@@ -115,9 +115,6 @@
   <data name="Help" xml:space="preserve">
     <value>Help (_H)</value>
   </data>
-  <data name="Help_About" xml:space="preserve">
-    <value>About QBDrumMap2</value>
-  </data>
   <data name="Help_Document" xml:space="preserve">
     <value>Document</value>
   </data>
