@@ -20,8 +20,8 @@ dist/
 # =====================
 # NuGet パッケージを GitHub Release 等で配布する場合は、
 # 下記2行のコメントを外す
-#!bin/**/*.nupkg
-#!bin/**/*.snupkg
+!bin/**/*.nupkg
+!bin/**/*.snupkg
 
 # =====================
 # Visual Studio
