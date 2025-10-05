@@ -1,2 +1,1 @@
-libQB
-テスト中
+libQB is Libraly for QB Application
