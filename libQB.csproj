@@ -11,7 +11,7 @@
     <Authors>Min Max</Authors>
     <Description>Library for QB Application</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/MinMax25/libMidi</RepositoryUrl>
+    <RepositoryUrl>https://github.com/MinMax25/libQB</RepositoryUrl>
     <PackageTags>utility;library;example</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
