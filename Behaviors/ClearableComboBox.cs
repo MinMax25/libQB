@@ -47,14 +47,17 @@ public static class ClearableComboBox
 
     private static void ComboBox_Loaded(object sender, RoutedEventArgs e)
     {
-        if (sender is not ComboBox comboBox) return;
+        if (sender is not ComboBox comboBox)
+            return;
 
         comboBox.ApplyTemplate();
 
         var rootGrid = FindVisualChild<Grid>(comboBox);
-        if (rootGrid == null) return;
+        if (rootGrid == null)
+            return;
 
-        if (rootGrid.Children.OfType<Button>().Any(b => b.Name == "PART_ClearButton")) return;
+        if (rootGrid.Children.OfType<Button>().Any(b => b.Name == "PART_ClearButton"))
+            return;
 
         var clearButton = new Button
         {

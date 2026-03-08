@@ -9,13 +9,15 @@ public class InverseBoolConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (!(value is bool b)) { return DependencyProperty.UnsetValue; }
+        if (!(value is bool b))
+        { return DependencyProperty.UnsetValue; }
         return !b;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (!(value is bool b)) { return DependencyProperty.UnsetValue; }
+        if (!(value is bool b))
+        { return DependencyProperty.UnsetValue; }
         return !b;
     }
 }

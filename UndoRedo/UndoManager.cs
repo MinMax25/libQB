@@ -20,7 +20,8 @@ public class UndoManager
 
     public void PushAction(IUndoableAction action)
     {
-        if (_isExecutingUndoRedo) return;
+        if (_isExecutingUndoRedo)
+            return;
 
         _undoStack.Push(action);
         _redoStack.Clear();
@@ -34,7 +35,8 @@ public class UndoManager
 
     public void Undo()
     {
-        if (!CanUndo) return;
+        if (!CanUndo)
+            return;
 
         var action = _undoStack.Pop();
         _isExecutingUndoRedo = true;
@@ -52,7 +54,8 @@ public class UndoManager
 
     public void Redo()
     {
-        if (!CanRedo) return;
+        if (!CanRedo)
+            return;
 
         var action = _redoStack.Pop();
         _isExecutingUndoRedo = true;

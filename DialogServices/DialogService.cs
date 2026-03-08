@@ -81,7 +81,8 @@ public class DialogService
 
     public async Task<bool?> ShowGenericDialogAsync(GenericDialogOptions options)
     {
-        if (mainWindow == null) return null;
+        if (mainWindow == null)
+            return null;
 
         var vm = new GenericDialogViewModel
         {

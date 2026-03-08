@@ -129,9 +129,12 @@ public class DataGridExtendBehavior
 
     private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (sender == null) return;
-        if (e.OriginalSource.GetType() != typeof(DataGrid)) return;
-        if (e.AddedItems.Count == 0 && e.RemovedItems.Count == 0) return;
+        if (sender == null)
+            return;
+        if (e.OriginalSource.GetType() != typeof(DataGrid))
+            return;
+        if (e.AddedItems.Count == 0 && e.RemovedItems.Count == 0)
+            return;
 
         SelectedRows.Clear();
         foreach (var item in AssociatedObject.SelectedItems)
@@ -161,8 +164,10 @@ public class DataGridExtendBehavior
 
     private void OnCellEditEnding(object? sender, DataGridCellEditEndingEventArgs e)
     {
-        if (IsEditing == false) return;
-        if (sender is not DataGrid dataGrid) return;
+        if (IsEditing == false)
+            return;
+        if (sender is not DataGrid dataGrid)
+            return;
 
         IsEditing = false;
         dataGrid.CommitEdit(DataGridEditingUnit.Cell, true);
@@ -171,7 +176,8 @@ public class DataGridExtendBehavior
 
     private void OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
-        if (!AssociatedObject.IsKeyboardFocusWithin) return;
+        if (!AssociatedObject.IsKeyboardFocusWithin)
+            return;
 
         if (IsEditing && e.Key == Key.Enter)
         {
@@ -183,9 +189,11 @@ public class DataGridExtendBehavior
             return;
         }
 
-        if (IsEditing) return;
+        if (IsEditing)
+            return;
 
-        if (e.Key != Key.Delete) return;
+        if (e.Key != Key.Delete)
+            return;
 
         var dataGrid = sender as DataGrid;
 

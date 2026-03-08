@@ -7,7 +7,8 @@ public class CompoundUndoableAction
 
     public void Add(IUndoableAction action)
     {
-        if (action == null) throw new ArgumentNullException(nameof(action));
+        if (action == null)
+            throw new ArgumentNullException(nameof(action));
         _actions.Add(action);
     }
 
