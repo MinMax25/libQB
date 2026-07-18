@@ -160,8 +160,8 @@
   <data name="Title_Dialog_Error" xml:space="preserve">
     <value>Error</value>
   </data>
-  <data name="Title_Dialog_Infomation" xml:space="preserve">
-    <value>Infomation</value>
+  <data name="Title_Dialog_Information" xml:space="preserve">
+    <value>Information</value>
   </data>
   <data name="Title_Dialog_Warning" xml:space="preserve">
     <value>Warning</value>

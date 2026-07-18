@@ -19,7 +19,7 @@ public class GenericDialogOptions
         {
             DialogType.Information => new GenericDialogOptions
             {
-                Title = title ?? Properties.Dialog.Title_Dialog_Infomation,
+                Title = title ?? Properties.Dialog.Title_Dialog_Information,
                 Message = message,
                 IconKind = PackIconMaterialKind.InformationOutline,
                 IconColor = Brushes.SkyBlue

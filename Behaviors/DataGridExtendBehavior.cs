@@ -107,7 +107,7 @@ public class DataGridExtendBehavior
 
     #endregion
 
-    #region Medhod
+    #region Method
 
     private void OnSorting(object sender, DataGridSortingEventArgs e)
     {

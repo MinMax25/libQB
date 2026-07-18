@@ -180,7 +180,7 @@
   <data name="Title_Dialog_Error" xml:space="preserve">
     <value>エラー</value>
   </data>
-  <data name="Title_Dialog_Infomation" xml:space="preserve">
+  <data name="Title_Dialog_Information" xml:space="preserve">
     <value>情報</value>
   </data>
   <data name="Title_Dialog_Warning" xml:space="preserve">

@@ -118,7 +118,7 @@
   <data name="Setting_PageTitle" xml:space="preserve">
     <value>設定</value>
   </data>
-  <data name="Setting_SatartUpPage" xml:space="preserve">
+  <data name="Setting_StartUpPage" xml:space="preserve">
     <value>スタートアップページ</value>
   </data>
 </root>

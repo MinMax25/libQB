@@ -63,9 +63,9 @@ namespace libQB.Properties {
         /// <summary>
         ///   Main に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        public static string Titile_MainPage {
+        public static string Title_MainPage {
             get {
-                return ResourceManager.GetString("Titile_MainPage", resourceCulture);
+                return ResourceManager.GetString("Title_MainPage", resourceCulture);
             }
         }
         

@@ -250,11 +250,11 @@ namespace libQB.Properties {
         }
         
         /// <summary>
-        ///   Infomation に類似しているローカライズされた文字列を検索します。
+        ///   Information に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        public static string Title_Dialog_Infomation {
+        public static string Title_Dialog_Information {
             get {
-                return ResourceManager.GetString("Title_Dialog_Infomation", resourceCulture);
+                return ResourceManager.GetString("Title_Dialog_Information", resourceCulture);
             }
         }
         

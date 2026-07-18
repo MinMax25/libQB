@@ -126,9 +126,9 @@ namespace libQB.Properties {
         /// <summary>
         ///   Start Up Page に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        public static string Setting_SatartUpPage {
+        public static string Setting_StartUpPage {
             get {
-                return ResourceManager.GetString("Setting_SatartUpPage", resourceCulture);
+                return ResourceManager.GetString("Setting_StartUpPage", resourceCulture);
             }
         }
     }
