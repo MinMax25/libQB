@@ -14,6 +14,8 @@ out/
 artifacts/
 publish/
 dist/
+docs/
+graphify-out/
 
 # =====================
 # Optional: keep built NuGet packages
