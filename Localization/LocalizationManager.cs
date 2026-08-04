@@ -63,12 +63,6 @@ public sealed class LocalizationManager : INotifyPropertyChanged
     private LocalizationManager()
     {
         AvailableLanguages = _builtIn;
-
-        // libQB自身が持つ組み込みResxは自己登録する
-        RegisterResourceManager("libQB.Resources", Properties.Resources.ResourceManager);
-        RegisterResourceManager("libQB.Menu", Properties.Menu.ResourceManager);
-        RegisterResourceManager("libQB.Dialog", Properties.Dialog.ResourceManager);
-        RegisterResourceManager("libQB.Hamburger", Properties.Hamburger.ResourceManager);
     }
 
     // 各プロジェクト固有の組み込みResx(例: "QBTemplate.Resources")をグループ名で登録する
