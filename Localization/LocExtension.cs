@@ -1,9 +1,12 @@
+using System.Windows.Data;
 using System.Windows.Markup;
 
 namespace libQB.Localization;
 
 // XAMLで {loc:Loc Key=libQB.Menu.File, Fallback={x:Static reslibQB:Menu.File}} のように使用する。
-// 外部言語パックにKeyの上書きがあればそれを、無ければFallback(従来通りのx:Static参照)を返す。
+// LocalizationManagerのインデクサへBindingすることで、言語切替(SetCulture)のたびに
+// PropertyChanged通知経由で表示中のテキストが自動的に再評価される。
+// Fallbackは、Keyに対応するグループが未登録の場合や設計時プレビュー用の保険として使われる。
 public class LocExtension : MarkupExtension
 {
     public string? Key { get; set; }
@@ -26,6 +29,14 @@ public class LocExtension : MarkupExtension
             return Fallback;
         }
 
-        return LocalizationManager.Instance.TryGetOverride(Key, out var value) ? value : Fallback;
+        var binding = new Binding($"[{Key}]")
+        {
+            Source = LocalizationManager.Instance,
+            Mode = BindingMode.OneWay,
+            FallbackValue = Fallback,
+            TargetNullValue = Fallback,
+        };
+
+        return binding.ProvideValue(serviceProvider);
     }
 }

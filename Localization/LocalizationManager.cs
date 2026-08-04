@@ -1,13 +1,18 @@
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
+using System.Resources;
 
 namespace libQB.Localization;
 
 // 組み込み言語(English/日本語)に加えて、外部フォルダに置かれた言語パックを
 // 実行時に発見・読み込みし、キー単位で文字列の上書き解決を行う。
-public sealed class LocalizationManager
+// インデクサ(this[fullKey])とPropertyChangedにより、言語切替をXAMLのBindingへ即時反映できる。
+public sealed class LocalizationManager : INotifyPropertyChanged
 {
     public static LocalizationManager Instance { get; } = new();
+
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     private readonly List<LanguageInfo> _builtIn =
     [
@@ -17,13 +22,59 @@ public sealed class LocalizationManager
 
     private readonly Dictionary<string, LanguagePack> _externalPacks = new();
 
+    // グループ名(例: "libQB.Menu")と、組み込みResxのResourceManagerの対応
+    private readonly Dictionary<string, ResourceManager> _resourceManagers = new();
+
     private LanguagePack? _activePack;
 
+    private CultureInfo _currentCulture = CultureInfo.CurrentUICulture;
+
     public IReadOnlyList<LanguageInfo> AvailableLanguages { get; private set; }
+
+    // fullKey ("グループ名.キー名") を指定して、現在の言語での解決済み文字列を取得する。
+    // XAMLからは {loc:Loc Key=...} 経由でこのインデクサにBindingされる。
+    public string? this[string fullKey]
+    {
+        get
+        {
+            if (TryGetOverride(fullKey, out var value))
+            {
+                return value;
+            }
+
+            int idx = fullKey.LastIndexOf('.');
+            if (idx <= 0 || idx == fullKey.Length - 1)
+            {
+                return null;
+            }
+
+            var group = fullKey[..idx];
+            var key = fullKey[(idx + 1)..];
+
+            if (_resourceManagers.TryGetValue(group, out var manager))
+            {
+                return manager.GetString(key, _currentCulture);
+            }
+
+            return null;
+        }
+    }
 
     private LocalizationManager()
     {
         AvailableLanguages = _builtIn;
+
+        // libQB自身が持つ組み込みResxは自己登録する
+        RegisterResourceManager("libQB.Resources", Properties.Resources.ResourceManager);
+        RegisterResourceManager("libQB.Menu", Properties.Menu.ResourceManager);
+        RegisterResourceManager("libQB.Dialog", Properties.Dialog.ResourceManager);
+        RegisterResourceManager("libQB.Hamburger", Properties.Hamburger.ResourceManager);
+    }
+
+    // 各プロジェクト固有の組み込みResx(例: "QBTemplate.Resources")をグループ名で登録する
+    public void RegisterResourceManager(string group, ResourceManager manager)
+    {
+        _resourceManagers[group] = manager;
     }
 
     // 指定フォルダ配下のサブフォルダ(カルチャコード名)を言語パックとして読み込む
@@ -66,9 +117,22 @@ public sealed class LocalizationManager
     }
 
     // 現在有効な言語を切り替える(組み込み言語の場合は上書きパックなし=常にフォールバックを使用)
+    // 切替後にPropertyChangedを発行し、Bindingしている全UI要素へ即時反映する。
     public void SetCulture(string cultureCode)
     {
         _activePack = _externalPacks.TryGetValue(cultureCode, out var pack) ? pack : null;
+
+        try
+        {
+            _currentCulture = new CultureInfo(cultureCode);
+        }
+        catch (CultureNotFoundException)
+        {
+            _currentCulture = CultureInfo.CurrentUICulture;
+        }
+
+        // インデクサ全体の再評価をWPFのBindingへ通知する(ObservableCollectionのIndexer通知と同じ手法)
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
     }
 
     // fullKey は "グループ名.キー名" (例: "libQB.Menu.File")
