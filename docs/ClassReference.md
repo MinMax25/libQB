@@ -1,174 +1,181 @@
-# libQB 公開型リファレンス
+# libQB リファレンス
 
-## 1. 調査範囲と利用箇所の表記
+この文書は、libQB 2.0.0の主要な公開型と利用上の契約を機能別にまとめたものです。
 
-2026-08-04時点のソースに宣言された公開型を機能別に記載する。「利用箇所」はlibQB内部と、参照可能だったQBTemplate、QBDrumMap、QBMidicon、QBChordBook、QBConference、QBLipsync、QBPigeonDocのC#／XAMLを検索した結果である。型名が外部コードに直接現れない場合は「現リポジトリでは参照を確認できない」とした。公開メンバーの網羅的API仕様ではなく、責務と主要な使い方を理解するためのリファレンスである。
+## DI属性（`libQB.Attributes`）
 
-## 2. DI属性（`libQB.Attributes`）
+| 型 | 概要 |
+| --- | --- |
+| `DIAttribute` | `Type1`、`Type2` を保持する属性基底クラス |
+| `DIWindowAttribute<TWindow>` | Window型の登録意図を表す属性 |
+| `DIWindowAttribute<TInterface,TWindow>` | 契約型とWindow型の対応を表す属性 |
+| `DIPageAttribute<T>` | Page型の登録意図を表す属性 |
+| `DIUserControlAttribute<T>` | UserControl型の登録意図を表す属性 |
+| `DISingletonAttribute` | 実装型自身をSingletonとして扱う意図を表す属性 |
+| `DISingletonAttribute<T>` | 契約型に対応するSingletonの意図を表す属性 |
 
-配置はすべて `Attributes/DIAttributes.cs`、公開範囲は `public` である。
+これらの属性はメタデータのみを提供します。リフレクションによる検索とDIコンテナーへの登録は利用側で実装してください。
 
-### `DIAttribute`
-
-- 種別: 抽象属性基底クラス
-- 主責務: DI登録対象に最大2個の `Type` メタデータを付加する。
-- 主プロパティ: `Type1`、`Type2`（いずれも読み書き可能・nullable）
-- 主メソッド: コンストラクター `DIAttribute(Type? value1 = null, Type? value2 = null)`
-- 関連型: すべてのDI属性派生型
-- 利用箇所: QBTemplate、QBDrumMap、QBMidicon、QBChordBook、QBConference、QBLipsync、QBPigeonDocの属性スキャン。
-- 注意: 登録処理は提供しない。アプリ側がリフレクションで属性と `Type1` / `Type2` を解釈する。
-
-### DI属性派生型
-
-| 名前 | 種別・型制約 | 格納する型 | 確認した利用箇所 | 注意 |
-|---|---|---|---|---|
-| `DIWindowAttribute<TWindow>` | 属性、`TWindow : Window` | `Type1=TWindow` | 上記QB各プロジェクト | Window型を1個表す |
-| `DIWindowAttribute<TInterface,TWindow>` | 属性、interface側はclass、実装側はWindow | `Type1=TInterface`, `Type2=TWindow` | 上記QB各プロジェクト | 型引数名はinterfaceだが、制約は `class` のみ |
-| `DIPageAttribute<T>` | 属性、`T : Page` | `Type1=T` | 上記QB各プロジェクト | Page登録用メタデータ |
-| `DIUserControlAttribute<T>` | 属性、`T : UserControl` | `Type1=T` | 上記QB各プロジェクト | UserControl登録用メタデータ |
-| `DISingletonAttribute` | 属性 | なし | libQBのサービス、上記QB各プロジェクト | 実装型自身をSingleton扱いする意図を示す |
-| `DISingletonAttribute<T>` | 属性 | `Type1=T` | `DialogService`、`WindowService`、`UndoManager`、上記QB各プロジェクト | 実装型との対応付けはスキャナー側の責務 |
-
-## 3. ダイアログ（`libQB.DialogServices`）
+## ダイアログ（`libQB.DialogServices`）
 
 ### `IDialogService`
 
-- 種別／配置: interface、`DialogServices/IDialogService.cs`
-- 主責務: OSファイル選択と共通メッセージダイアログの契約。
-- 主メソッド: `ShowOpenFileDialog`、`ShowSaveFileDialog`、`ShowSelectFolderDialog`、`ShowGenericDialogAsync`、`ShowInformationAsync`、`ShowAlertAsync`、`ShowErrorAsync`、`ShowWarningAsync`、`ShowConfirmAsync`
-- 関連型: `DialogService`、`GenericDialogOptions`
-- 利用箇所: QBTemplate、QBDrumMap、QBMidicon、QBConference、QBLipsync。
-- 注意: ファイル系メソッドはキャンセル時に実質nullを返すが、戻り型は `Task<string>`。
+ファイル選択と共通メッセージダイアログの契約です。
 
-### `DialogService`
+| メソッド | 概要 |
+| --- | --- |
+| `ShowOpenFileDialog` | ファイルを開くダイアログを表示 |
+| `ShowSaveFileDialog` | ファイルを保存するダイアログを表示 |
+| `ShowSelectFolderDialog` | フォルダー選択ダイアログを表示 |
+| `ShowGenericDialogAsync` | 指定したOptionsで共通ダイアログを表示 |
+| `ShowInformationAsync` | 情報ダイアログを表示 |
+| `ShowAlertAsync` | アラートダイアログを表示 |
+| `ShowErrorAsync` | エラーダイアログを表示 |
+| `ShowWarningAsync` | 警告ダイアログを表示 |
+| `ShowConfirmAsync` | 確認ダイアログを表示 |
 
-- 種別／配置: class、`DialogServices/DialogService.cs`
-- 主責務: `IDialogService` のWPF/MahApps実装。Windows標準ファイルダイアログを開き、共通ダイアログをMainWindowのMetroオーバーレイに表示する。
-- 公開メソッド: `IDialogService` と同じ。
-- 関連型: `MetroWindow`、`GenericDialog`、`GenericDialogViewModel`、`GenericDialogOptions`
-- 利用箇所: 上記アプリで `IDialogService` 実装としてDI登録。libQB内部では `[DISingleton<IDialogService>]` を付与。
-- 注意: MainWindowが `MetroWindow` でなければ共通ダイアログを表示せずnullを返す。ファイル系メソッドは非同期I/Oではなく同期ダイアログの結果を `Task.FromResult` で包む。
+ファイル／フォルダーダイアログはキャンセル時にnullを返します。共通ダイアログはMainWindowが `MetroWindow` でない場合にnullを返します。
 
 ### ダイアログ構成型
 
-| 名前 | 種別／配置 | 主責務・主要メンバー | 利用箇所と注意 |
-|---|---|---|---|
-| `DialogType` | enum、`DialogType.cs` | `Information`, `Alert`, `Warning`, `Error`, `Confirm` | `GenericDialogOptions.Create` 内部でプリセット選択に使用。外部での直接参照は現リポジトリでは確認できない |
-| `GenericDialogOptions` | class、`GenericDialogOptions.cs` | Title、Message、Material Icon、Brush、ボタン文言、キャンセル表示を保持。`Create(DialogType, ...)` でプリセット生成 | `DialogService` 内部で利用。外部での直接参照は現リポジトリでは確認できない |
-| `GenericDialogViewModel` | `ObservableObject` 派生partial class、`GenericDialogViewModel.cs` | 画面表示プロパティ、生成される `OkCommand` / `CancelCommand`、`CompletionSource` | `DialogService` / `GenericDialog.xaml` 内部。外部参照なし。コマンドはtrue/falseを一度だけ完了通知する |
-| `GenericDialog` | `BaseMetroDialog` 派生partial class、`GenericDialog.xaml(.cs)` | 共通メッセージ画面 | `DialogService` 内部。外部参照なし |
-| `DialogTextProvider` | static class、`DialogTextProvider.cs` | OK/Cancel/Yes/No、各タイトル、Clear tooltipを返す `Func<string>` プロパティ | libQB内部とQBTemplate。プロセス全体で可変な静的差し込み口であり、アプリ起動時の設定を想定 |
+| 型 | 概要 |
+| --- | --- |
+| `DialogService` | `IDialogService` のWPF/MahApps実装 |
+| `DialogType` | `Information`、`Alert`、`Warning`、`Error`、`Confirm` を表すEnum |
+| `GenericDialogOptions` | タイトル、本文、アイコン、色、ボタン表示を保持 |
+| `GenericDialogViewModel` | 共通ダイアログの表示状態とCommandを提供 |
+| `GenericDialog` | `BaseMetroDialog` 派生の共通ダイアログView |
+| `DialogTextProvider` | ボタン、タイトル、tooltip文言を返すdelegateの静的な差し込み口 |
 
-## 4. Windowサービス（`libQB.WindowServices`）
+`DialogTextProvider` の既定値は英語です。言語切替へ追従させる場合は、アプリケーション起動時に各 `Func<string>` を設定してください。
+
+## Windowサービス（`libQB.WindowServices`）
 
 ### `IWindowService` / `WindowService`
 
-| 項目 | `IWindowService` | `WindowService` |
-|---|---|---|
-| 種別・配置 | interface、`IWindowService.cs` | class、`WindowService.cs` |
-| 主責務 | Window表示・結果返却・Closeの契約 | Windowを生成し、ViewModelを `IServiceProvider` から解決してモーダル表示 |
-| 主メソッド | `ShowWindow<TWindow,TViewModel>`、`ShowWindowWithCallback<TWindow,TViewModel,TResult>`、`CloseWindow` | 同左 |
-| 主プロパティ | なし | `Owner`（現在の表示処理では参照されない） |
-| 利用箇所 | QBTemplate、QBDrumMap、QBMidicon、QBConference、QBLipsync | 同アプリでDI登録 |
+| メンバー | 概要 |
+| --- | --- |
+| `ShowWindow<TWindow,TViewModel>` | ViewModelをDIから解決してWindowをモーダル表示 |
+| `ShowWindowWithCallback<TWindow,TViewModel,TResult>` | パラメーターを渡して表示し、終了後に結果を通知 |
+| `CloseWindow` | 指定したWindowを閉じる |
+| `WindowService.Owner` | 公開Ownerプロパティ。現在の表示処理はメソッド引数のownerを使用 |
 
-`ShowWindowWithCallback` はViewModelが `IParameterReceiver` なら表示前にパラメーターを渡し、Windowの `Closed` 後に `IResultProvider<TResult>` から結果を取得する。`ShowWindow` は引数 `parameter` を使用しない。両メソッドともWindowはDIではなく `new TWindow()` で生成し、`ShowDialog()` を呼ぶ。
+Window型には `Window, new()`、ViewModel型には `class` の制約があります。Windowは `new TWindow()` で生成され、ViewModelのみが `IServiceProvider` から解決されます。
 
 ### 補助インターフェース
 
-| 名前 | 配置 | 主メソッド | 利用箇所 | 注意 |
-|---|---|---|---|---|
-| `IParameterReceiver` | `IParameterReceiver.cs` | `ReceiveParameter(object)` | QBDrumMap、QBMidicon | `ShowWindowWithCallback` が表示前に呼ぶ |
-| `IResultProvider<TResult>` | `IResultProvider.cs` | `GetResult()` | QBDrumMap、QBMidicon、QBConference | WindowのClosedイベント後に結果を返す |
-| `IWindowClosingAware` | `IWindowClosingAware.cs` | `Task<bool> OnWindowClosingAsync()` | QBDrumMap、QBMidicon | libQB内からは呼ばれない。ShellWindow等のアプリ側コードが終了可否確認に使う |
+| 型 | メソッド | 用途 |
+| --- | --- | --- |
+| `IParameterReceiver` | `ReceiveParameter(object)` | callback版の表示前に入力を受け取る |
+| `IResultProvider<TResult>` | `GetResult()` | Window終了後に結果を返す |
+| `IWindowClosingAware` | `OnWindowClosingAsync()` | ViewModelが終了可否を返すための契約 |
 
-## 5. Undo/Redo（`libQB.UndoRedo`）
+`IWindowClosingAware` の呼び出しは利用側Windowで実装してください。
+
+## Undo/Redo（`libQB.UndoRedo`）
 
 ### `IUndoManager` / `UndoManager`
 
-- 種別／配置: interface `IUndoManager.cs`、class `UndoManager.cs`
-- 主責務: Undo/Redo用の2スタックを管理し、実行可否を通知する。
-- 主プロパティ: `CanUndo`、`CanRedo`、`IsExecutingUndoRedo`
-- 主メソッド: `PushAction`、`RegisterPropertyChange<T>`、`Undo`、`Redo`、`Clear`
-- 関連型: `IUndoableAction`、`PropertyChangeAction<T>`
-- 利用箇所: QBDrumMap、QBMidicon、QBLipsync。`UndoManager` は `[DISingleton<IUndoManager>]`。
-- 注意: 履歴上限、スレッド同期、永続化はない。Undo/Redo実行中だけ再登録を抑止する。状態通知は `CanUndo` と `CanRedo` に対して発行され、`IsExecutingUndoRedo` のPropertyChangedは発行されない。
+| メンバー | 概要 |
+| --- | --- |
+| `CanUndo` | Undo可能かを返す |
+| `CanRedo` | Redo可能かを返す |
+| `IsExecutingUndoRedo` | Undo/Redo実行中かを返す |
+| `PushAction` | 履歴へActionを追加し、Redo履歴を破棄 |
+| `RegisterPropertyChange<T>` | プロパティ変更を履歴へ追加 |
+| `Undo` | 直前のActionを取り消す |
+| `Redo` | 取り消したActionを再実行 |
+| `Clear` | 全履歴を破棄 |
 
-### アクション型
+`CanUndo` と `CanRedo` の変更は `INotifyPropertyChanged` で通知されます。履歴上限、永続化、スレッド同期はありません。
 
-| 名前 | 種別／配置 | 主責務・メンバー | 利用箇所・注意 |
-|---|---|---|---|
-| `IUndoableAction` | interface、`IUndoableAction.cs` | `Undo()`、`Redo()` | libQB内部。外部で型名の直接参照は確認できない |
-| `PropertyChangeAction<T>` | class、`PropertyChangeAction.cs` | 式木からsetterを構築し、old/new値を設定 | QBDrumMap。式のBodyは直接の `MemberExpression` が必要 |
-| `CompoundUndoableAction` | class、`CompoundUndoableAction.cs` | `Add`、逆順Undo、順方向Redo、`IsEmpty` | QBDrumMap。空でもPush自体は禁止されない |
-| `UndoManagerExtensions` | static class、`UndoManager.cs` | `Do(this IUndoManager, IUndoableAction)` | 現リポジトリでは参照を確認できない。名前に反してactionの実行はせずPushのみ |
+### Action型
 
-## 6. Localization（`libQB.Localization`）
+| 型 | 概要 |
+| --- | --- |
+| `IUndoableAction` | `Undo()` と `Redo()` を定義する契約 |
+| `PropertyChangeAction<T>` | 式木で指定したプロパティへold/new値を設定 |
+| `CompoundUndoableAction` | 複数Actionを1つの履歴単位として管理 |
+| `UndoManagerExtensions` | Actionを履歴へ追加する `Do` 拡張メソッド |
+
+`UndoManagerExtensions.Do` はActionを即時実行せず、履歴へ追加します。
+
+## Localization（`libQB.Localization`）
 
 ### `LocalizationManager`
 
-- 種別／配置: sealed class、`Localization/LocalizationManager.cs`
-- 公開範囲: public、private constructorを持つプロセス内Singleton（`Instance`）
-- 主責務: ResourceManager登録、外部言語パック探索、カルチャ切替、キー解決、WPF Bindingへの再評価通知。
-- 主プロパティ: `Instance`、`AvailableLanguages`、文字列インデクサ `this[string fullKey]`
-- 主メソッド: `RegisterResourceManager`、`Initialize`、`SetCulture`、`TryGetOverride`、`Resolve`
-- 関連型: `LanguageInfo`、`LanguagePack`、`LocExtension`、`ResourceManager`
-- 利用箇所: QBTemplate。libQB内部では `LocExtension` が参照。
-- 注意: キーは最後の `.` でgroup/keyに分割する。外部パックの値が最優先で、なければ登録済みResourceManagerへフォールバックする。`Initialize` はディレクトリ列挙・resx解析例外を捕捉しない。`SetCulture` は無効なカルチャを現在UIカルチャへ戻すが、外部パック選択自体は辞書キーで先に決まる。
+プロセス内Singletonの `Instance` を通じて、言語一覧、ResourceManager、外部言語パック、現在のカルチャを管理します。
 
-### Localization補助型
+| メンバー | 概要 |
+| --- | --- |
+| `AvailableLanguages` | 利用可能な言語情報の一覧 |
+| `this[string fullKey]` | 外部パック、ResourceManagerの順に文字列を解決 |
+| `RegisterResourceManager` | group名とResourceManagerを登録 |
+| `Initialize` | カルチャ別サブフォルダーから外部resxを読み込む |
+| `SetCulture` | 現在のカルチャと外部パックを切り替える |
+| `TryGetOverride` | 外部パックの値だけを検索 |
+| `Resolve` | 外部パックになければ指定fallbackを返す |
 
-| 名前 | 種別／配置 | 主責務・主要メンバー | 利用箇所・注意 |
-|---|---|---|---|
-| `LanguageInfo` | sealed DTO、`LanguageInfo.cs` | required initの `Code`, `DisplayName` と `IsBuiltIn` | QBTemplate。`IsBuiltIn` はlibQB内では設定のみ |
-| `LanguagePack` | sealed class、`LanguagePack.cs` | 1言語の `Code` とgroup/key/value辞書。`LoadFromFolder` | `LocalizationManager` 内部。外部直接参照なし。直下の `*.resx` のみ読む |
-| `ResxReader` | static class、`ResxReader.cs` | `Load(path)` で文字列data要素を辞書化 | `LanguagePack` 内部。外部直接参照なし。非文字列resx機能は扱わない |
-| `LocExtension` | `MarkupExtension` 派生class、`LocExtension.cs` | `Key`、`Fallback`、`ProvideValue` | QBTemplateのXAMLで `{loc:Loc ...}` として利用（Markup Extensionでは`Extension`接尾辞を省略）。ManagerのインデクサへのOneWay Bindingを返し、`Item[]` 通知で再評価される |
+full keyは最後の `.` でgroup名とkey名に分割されます。たとえば `MyApp.Resources.Save` は `MyApp.Resources` と `Save` に分割されます。
 
-## 7. Settings（`libQB.Settings`）
+libQB自身はResourceManagerを登録しません。`Initialize` によるディレクトリ列挙やresx解析で発生した例外は呼び出し元へ伝播します。
+
+### 補助型
+
+| 型 | 概要 |
+| --- | --- |
+| `LanguageInfo` | `Code`、`DisplayName`、`IsBuiltIn` を持つ言語情報 |
+| `LanguagePack` | 1カルチャ分のgroup/key/valueを保持 |
+| `ResxReader` | resxの文字列data要素を辞書として読み込む |
+| `LocExtension` | `LocalizationManager` のインデクサへOneWay BindingするMarkupExtension |
+
+`LocExtension` は `Key` と `Fallback` を受け取り、`SetCulture` 時の通知で表示を再評価します。
+
+## Settings（`libQB.Settings`）
 
 ### `ISettingStore<T>`
 
-- 種別／配置: generic interface、`Settings/ISettingStore.cs`、`T : class, new()`
-- 主責務: 設定モデルのロード／保存を永続化方式から分離する。
-- 主メソッド: `T Load()`、`void Save(T settings)`
-- 利用箇所: libQB内部、QBTemplate。
+`T : class, new()` を満たす設定モデルに対して、`Load()` と `Save(T settings)` を定義します。
 
 ### `TomlSettingStore<T>`
 
-- 種別／配置: sealed generic class、`Settings/TomlSettingStore.cs`
-- 主責務: Tomlynによる `ISettingStore<T>` 実装。
-- 主メソッド: constructor（保存先パス）、`Load`、`Save`
-- 利用箇所: QBTemplate。
-- 注意: ファイル不存在・`TryDeserialize`失敗は `new T()`。ディレクトリ作成、同時書込み制御、原子的置換、例外の変換は行わない。
+Tomlynを利用する `ISettingStore<T>` 実装です。コンストラクターで保存先ファイルパスを指定します。
 
-## 8. WPF Behavior／添付機能（`libQB.Behaviors`）
+- ファイルが存在しない場合は `new T()` を返します。
+- デシリアライズに失敗した場合は `new T()` を返します。
+- enum等の変換規則は設定型側で指定します。
+- 保存先ディレクトリの作成と例外変換は行いません。
 
-| 名前 | 種別／配置 | 主責務・主プロパティ | 利用箇所 | 注意 |
-|---|---|---|---|---|
-| `ClearableComboBox` | static添付機能、`ClearableComboBox.cs` | `EnableClearButton`、`ClearValue` | QBDrumMap | テンプレートの最初のGridへボタンを動的追加。`ClearValue` は処理で未使用。選択ありならボタン表示 |
-| `ClosePopupOnOutsideClickBehavior` | `Behavior<Popup>`、同名ファイル | MainWindow上のPopup外クリックを検出して閉じる | 現リポジトリでは参照を確認できない | `Application.Current.MainWindow` のPreviewMouseDownに購読。Popupが開いたままDetachされる場合のMainWindow購読解除は実装されていない |
-| `ContextMenuBehavior` | `Behavior<FrameworkElement>` | `IsContextMenuEnabled` でOpeningを抑止 | QBDrumMap | ContextMenu自体の生成・状態変更は行わない |
-| `DataGridExtendBehavior` | `Behavior<DataGrid>` | `IsEditing`, `IsSorted`, `SelectedRows`, `SelectedRow`, `DeleteCommand`, `SelectionChangedCommand` | QBDrumMap、QBMidicon | Enter確定、Delete転送、選択同期、3状態ソート。SelectionChangedCommandへ選択数を渡す |
-| `FocusValidationBlockBehavior` | static添付機能 | `IsEnabled` | 現リポジトリでは有効な参照を確認できない（QBDrumMap、QBMidiconにコメントアウトされた設定例のみ存在） | DataContextが `INotifyDataErrorInfo` で、対象要素のTextBox.Text Bindingにエラーがある場合のみフォーカス移動を抑止 |
+## WPF Behavior／添付機能（`libQB.Behaviors`）
 
-## 9. Value Converter（`libQB.ValueConverters`）
+| 型 | 概要 |
+| --- | --- |
+| `ClearableComboBox` | ComboBoxへクリアボタンを追加する添付機能 |
+| `ClosePopupOnOutsideClickBehavior` | Popup外のクリックでPopupを閉じるBehavior |
+| `ContextMenuBehavior` | ContextMenuの表示可否を制御するBehavior |
+| `DataGridExtendBehavior` | 編集状態、選択行、Delete、SortをViewModelへ接続 |
+| `FocusValidationBlockBehavior` | 検証エラー時のフォーカス移動を抑止する添付機能 |
 
-すべてpublic classで `IValueConverter` を実装する。
+`DataGridExtendBehavior` の主なDependencyPropertyは `IsEditing`、`IsSorted`、`SelectedRows`、`SelectedRow`、`DeleteCommand`、`SelectionChangedCommand` です。
 
-| 名前／配置 | Convert | ConvertBack | 利用箇所・注意 |
-|---|---|---|---|
-| `BaseThemeConverter.cs` | 値とparameterの文字列表現が等しいか | true時にtargetTypeのEnumをparse、それ以外 `Binding.DoNothing` | QBTemplate、QBDrumMap、QBMidicon、QBConference、QBLipsync |
-| `IncrementConverter.cs` | `int.Parse($"0{value}") + 1` | `NotImplementedException` | QBMidicon。数値化できない非空値は例外 |
-| `InverseBoolConverter.cs` | bool反転 | bool反転 | QBDrumMap、QBMidicon、QBLipsync。bool以外は `UnsetValue` |
-| `TrimConverter.cs` | `ToString()` | `ToString()?.Trim()` | QBDrumMap、QBMidicon、QBLipsync |
+## Value Converter（`libQB.ValueConverters`）
 
-## 10. Enum（`libQB.Enums`）
+| 型 | Convert | ConvertBack |
+| --- | --- | --- |
+| `BaseThemeConverter` | 値とparameterの文字列表現を比較 | trueの場合にtarget Enumへ変換 |
+| `IncrementConverter` | 整数値へ1を加算 | 未実装 |
+| `InverseBoolConverter` | boolを反転 | boolを反転 |
+| `TrimConverter` | 値を文字列化 | 文字列化して前後の空白を除去 |
+
+未対応の値に対する戻り値や例外は各Converterで異なります。Bindingへ設定する値の型を合わせてください。
+
+## Enum（`libQB.Enums`）
 
 ### `BaseTheme`
 
-- 種別／配置: enum、`Enums/BaseTheme.cs`
-- 値: `Light`, `Dark`
-- 主責務: QBアプリ共通のベーステーマ表現。
-- 関連型: `JsonStringEnumConverter<BaseTheme>` 属性、`BaseThemeConverter`
-- 利用箇所: QBTemplate、QBDrumMap、QBMidicon、QBConference、QBLipsync。
-- 注意: libQB自身はテーマ変更処理を提供しない。
+アプリケーションのベーステーマを表すEnumです。
+
+- `Light`
+- `Dark`
+
+JSONでは文字列Enumとして扱われます。テーマを実際に適用する処理は利用側で実装してください。
