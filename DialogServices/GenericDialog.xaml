@@ -4,15 +4,23 @@
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StackPanel Margin="20">
-        <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0 0 0 10">
             <iconPacks:PackIconMaterial Width="40" Height="40" Kind="{Binding IconKind}" Foreground="{Binding IconColor}"/>
             <TextBlock FontSize="22" Text="{Binding Title}" Margin="10 0" VerticalAlignment="Center"/>
         </StackPanel>
 
-        <TextBlock FontSize="18" Text="{Binding Message}" TextWrapping="Wrap" Margin="0 0 0 20"/>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0 0 0 20">
+            <TextBlock FontSize="18" Text="{Binding Message}" TextWrapping="Wrap"/>
+        </ScrollViewer>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button
                 mah:ControlsHelper.ContentCharacterCasing="Normal"
                 Width="80"
@@ -26,5 +34,5 @@
                 Content="{Binding CancelButtonText}"
                 Command="{Binding CancelCommand}"/>
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </mah:BaseMetroDialog>
