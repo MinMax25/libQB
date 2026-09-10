@@ -157,9 +157,31 @@ public sealed class LocalizationManager : INotifyPropertyChanged
         return false;
     }
 
-    // C#コードから利用する簡易ヘルパー。上書きが無ければfallbackをそのまま返す
+    // C#コードから利用する簡易ヘルパー。外部言語パックの上書きが無ければ、
+    // 組み込みResx(ResourceManager)を現在のカルチャで参照し、そこにも無ければfallbackを返す
     public string Resolve(string fullKey, string fallback)
     {
-        return TryGetOverride(fullKey, out var value) ? value! : fallback;
+        if (TryGetOverride(fullKey, out var value))
+        {
+            return value!;
+        }
+
+        int idx = fullKey.LastIndexOf('.');
+        if (idx > 0 && idx < fullKey.Length - 1)
+        {
+            var group = fullKey[..idx];
+            var key = fullKey[(idx + 1)..];
+
+            if (_resourceManagers.TryGetValue(group, out var manager))
+            {
+                var resolved = manager.GetString(key, _currentCulture);
+                if (resolved is not null)
+                {
+                    return resolved;
+                }
+            }
+        }
+
+        return fallback;
     }
 }
