@@ -157,9 +157,10 @@ public sealed class LocalizationManager : INotifyPropertyChanged
         return false;
     }
 
-    // C#コードから利用する簡易ヘルパー。外部言語パックの上書きが無ければ、
-    // 組み込みResx(ResourceManager)を現在のカルチャで参照し、そこにも無ければfallbackを返す
-    public string Resolve(string fullKey, string fallback)
+    // C#コードから利用する簡易ヘルパー。外部言語パックの上書き、無ければ組み込みResxを
+    // 現在のカルチャで参照する。どちらにも無ければ登録漏れ・typoとみなし例外を投げる
+    // (fallback文字列を重複定義させないための版)。
+    public string Require(string fullKey)
     {
         if (TryGetOverride(fullKey, out var value))
         {
@@ -182,6 +183,6 @@ public sealed class LocalizationManager : INotifyPropertyChanged
             }
         }
 
-        return fallback;
+        throw new KeyNotFoundException($"Localization key not found: {fullKey}");
     }
 }
