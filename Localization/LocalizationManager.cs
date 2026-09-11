@@ -161,7 +161,7 @@ public sealed class LocalizationManager : INotifyPropertyChanged
     // C#コードから利用する簡易ヘルパー。外部言語パックの上書き、無ければ組み込みResxを
     // 現在のカルチャで参照する。どちらにも無ければ登録漏れ・typoとみなし例外を投げる
     // (fallback文字列を重複定義させないための版)。
-    public string Require(string fullKey)
+    private string Require(string fullKey)
     {
         if (TryGetOverride(fullKey, out var value))
         {
