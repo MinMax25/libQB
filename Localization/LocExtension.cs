@@ -11,8 +11,6 @@ public class LocExtension : MarkupExtension
 {
     public string? Key { get; set; }
 
-    public object? Fallback { get; set; }
-
     public LocExtension()
     {
     }
@@ -26,10 +24,10 @@ public class LocExtension : MarkupExtension
     {
         if (string.IsNullOrEmpty(Key))
         {
-            return Fallback;
+            return default;
         }
 
-        var fallback = Fallback ?? GetDefaultFallback(Key);
+        var fallback = GetDefaultFallback(Key);
 
         var binding = new Binding($"[{Key}]")
         {
