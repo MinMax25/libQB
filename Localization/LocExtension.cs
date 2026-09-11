@@ -1,4 +1,4 @@
-using System.Windows.Data;
+﻿using System.Windows.Data;
 using System.Windows.Markup;
 
 namespace libQB.Localization;

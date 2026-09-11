@@ -1,4 +1,4 @@
-namespace libQB.Localization;
+﻿namespace libQB.Localization;
 
 public sealed class LanguageInfo
 {

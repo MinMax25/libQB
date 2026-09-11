@@ -1,4 +1,4 @@
-namespace libQB.DialogServices;
+﻿namespace libQB.DialogServices;
 
 // 共通ダイアログ/共通コントロールが使う既定文言の差し込み口。
 // libQBはResxを持たないため、既定値は英語のハードコードとし、
