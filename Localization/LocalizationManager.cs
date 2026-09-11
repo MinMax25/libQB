@@ -189,11 +189,10 @@ public sealed class LocalizationManager : INotifyPropertyChanged
 
     public string Require<T>(Expression<Func<T>> propertyExpression)
     {
-        if (propertyExpression.Body is MemberExpression memberExpr)
+        if (propertyExpression.Body is MemberExpression memberExpr && memberExpr.Member.DeclaringType is Type declaringType)
         {
-            // DeclaringType.FullName で "QBLipsync.Properties.Resources"
-            // Member.Name で "Loading_Title"
-            var fullKey = $"{memberExpr?.Member?.DeclaringType?.FullName}.{memberExpr?.Member.Name}";
+            var group = declaringType.FullName ?? declaringType.Name;
+            var fullKey = $"{group}.{memberExpr.Member.Name}";
             return Require(fullKey);
         }
         throw new ArgumentException("Invalid property expression", nameof(propertyExpression));
@@ -201,7 +200,8 @@ public sealed class LocalizationManager : INotifyPropertyChanged
 
     public string Require<TResource>(string key)
     {
-        var fullKey = $"{typeof(TResource).FullName}.{key}";
+        var group = typeof(TResource).FullName ?? typeof(TResource).Name;
+        var fullKey = $"{group}.{key}";
         return Require(fullKey);
     }
 }
