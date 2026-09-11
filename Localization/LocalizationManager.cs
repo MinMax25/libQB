@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
+using System.Linq.Expressions;
 using System.Resources;
 
 namespace libQB.Localization;
@@ -184,5 +185,23 @@ public sealed class LocalizationManager : INotifyPropertyChanged
         }
 
         throw new KeyNotFoundException($"Localization key not found: {fullKey}");
+    }
+
+    public string Require<T>(Expression<Func<T>> propertyExpression)
+    {
+        if (propertyExpression.Body is MemberExpression memberExpr)
+        {
+            // DeclaringType.FullName で "QBLipsync.Properties.Resources"
+            // Member.Name で "Loading_Title"
+            var fullKey = $"{memberExpr?.Member?.DeclaringType?.FullName}.{memberExpr?.Member.Name}";
+            return Require(fullKey);
+        }
+        throw new ArgumentException("Invalid property expression", nameof(propertyExpression));
+    }
+
+    public string Require<TResource>(string key)
+    {
+        var fullKey = $"{typeof(TResource).FullName}.{key}";
+        return Require(fullKey);
     }
 }
