@@ -26,35 +26,57 @@ public sealed class LocalizationManager : INotifyPropertyChanged
     // グループ名(例: "libQB.Menu")と、組み込みResxのResourceManagerの対応
     private readonly Dictionary<string, ResourceManager> _resourceManagers = new();
 
+    // リソース値(例: "詳細")から fullKey ("グループ名.キー名") への逆引き辞書
+    private readonly Dictionary<string, string> _valueToFullKeyMap = new();
+
     private LanguagePack? _activePack;
 
     private CultureInfo _currentCulture = CultureInfo.CurrentUICulture;
 
     public IReadOnlyList<LanguageInfo> AvailableLanguages { get; private set; }
 
-    // fullKey ("グループ名.キー名") を指定して、現在の言語での解決済み文字列を取得する。
+    // fullKey ("グループ名.キー名") やキー名、または x:Static 経由のリソース値を指定して、現在の言語での解決済み文字列を取得する。
     // XAMLからは {loc:Loc Key=...} 経由でこのインデクサにBindingされる。
-    public string? this[string fullKey]
+    public string? this[string keyOrValue]
     {
         get
         {
-            if (TryGetOverride(fullKey, out var value))
-            {
-                return value;
-            }
-
-            int idx = fullKey.LastIndexOf('.');
-            if (idx <= 0 || idx == fullKey.Length - 1)
+            if (string.IsNullOrEmpty(keyOrValue))
             {
                 return null;
             }
 
-            var group = fullKey[..idx];
-            var key = fullKey[(idx + 1)..];
-
-            if (_resourceManagers.TryGetValue(group, out var manager))
+            if (TryGetOverride(keyOrValue, out var value))
             {
-                return manager.GetString(key, _currentCulture);
+                return value;
+            }
+
+            int idx = keyOrValue.LastIndexOf('.');
+            if (idx > 0 && idx < keyOrValue.Length - 1)
+            {
+                var group = keyOrValue[..idx];
+                var key = keyOrValue[(idx + 1)..];
+
+                if (_resourceManagers.TryGetValue(group, out var manager))
+                {
+                    return manager.GetString(key, _currentCulture);
+                }
+            }
+
+            // ピリオドを含まない場合、または x:Static 評価後の文字列値の場合
+            if (_valueToFullKeyMap.TryGetValue(keyOrValue, out var resolvedFullKey))
+            {
+                return this[resolvedFullKey];
+            }
+
+            // キー名だけで検索を試みる
+            foreach (var (grp, mgr) in _resourceManagers)
+            {
+                var val = mgr.GetString(keyOrValue, _currentCulture);
+                if (val != null)
+                {
+                    return val;
+                }
             }
 
             return null;
@@ -70,6 +92,38 @@ public sealed class LocalizationManager : INotifyPropertyChanged
     public void RegisterResourceManager(string group, ResourceManager manager)
     {
         _resourceManagers[group] = manager;
+        BuildValueToFullKeyMap(group, manager);
+    }
+
+    private void BuildValueToFullKeyMap(string group, ResourceManager manager)
+    {
+        try
+        {
+            CultureInfo[] cultures = [CultureInfo.InvariantCulture, new CultureInfo("ja-JP"), CultureInfo.CurrentUICulture, CultureInfo.CurrentCulture];
+            foreach (var culture in cultures.Distinct())
+            {
+                var set = manager.GetResourceSet(culture, true, true);
+                if (set != null)
+                {
+                    foreach (System.Collections.DictionaryEntry entry in set)
+                    {
+                        if (entry.Key is string key)
+                        {
+                            var fullKey = $"{group}.{key}";
+                            var val = manager.GetString(key, culture);
+                            if (!string.IsNullOrEmpty(val))
+                            {
+                                _valueToFullKeyMap[val] = fullKey;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch
+        {
+            // 無視
+        }
     }
 
     // 指定フォルダ配下のサブフォルダ(カルチャコード名)を言語パックとして読み込む

@@ -1,4 +1,4 @@
-﻿using System.Windows.Data;
+using System.Windows.Data;
 using System.Windows.Markup;
 
 namespace libQB.Localization;
@@ -9,27 +9,28 @@ namespace libQB.Localization;
 // Fallbackが未指定の場合、LocalizationManagerまたはアセンブリ内のリソースから自動補完される。
 public class LocExtension : MarkupExtension
 {
-    public string? Key { get; set; }
+    public object? Key { get; set; }
 
     public LocExtension()
     {
     }
 
-    public LocExtension(string key)
+    public LocExtension(object key)
     {
         Key = key;
     }
 
     public override object? ProvideValue(IServiceProvider serviceProvider)
     {
-        if (string.IsNullOrEmpty(Key))
+        var keyStr = Key?.ToString();
+        if (string.IsNullOrEmpty(keyStr))
         {
             return default;
         }
 
-        var fallback = GetDefaultFallback(Key);
+        var fallback = GetDefaultFallback(keyStr);
 
-        var binding = new Binding($"[{Key}]")
+        var binding = new Binding($"[{keyStr}]")
         {
             Source = LocalizationManager.Instance,
             Mode = BindingMode.OneWay,
