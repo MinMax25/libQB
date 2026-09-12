@@ -1,5 +1,8 @@
 # libQB アーキテクチャ
 
+更新者：Codex
+最終更新日時：2026-09-12 14:50
+
 ## 全体構成
 
 libQBは、WPFアプリケーションから利用する共通基盤ライブラリです。アプリケーションのComposition Rootは持たず、サービス契約、実装、WPF表示支援、永続化アダプターを提供します。
@@ -65,7 +68,7 @@ sequenceDiagram
 
 ## Localization
 
-Localizationは、外部言語パックと利用側が登録したResourceManagerを、同じfull keyで解決します。外部パックの値が優先され、値がない場合はResourceManagerへフォールバックします。
+Localizationは、外部言語パックと利用側が登録したResourceManagerを解決します。インデクサはfull keyだけでなく、ResourceManagerに登録された値やキー名も検索できます。外部パックの値が優先され、値がない場合はResourceManagerへフォールバックします。
 
 ```mermaid
 flowchart LR
@@ -80,7 +83,7 @@ flowchart LR
     Notify --> XAML
 ```
 
-`Initialize` は指定ルート直下のサブフォルダーをカルチャコードとして扱い、各フォルダー直下の `*.resx` を読み込みます。`SetCulture` は `Item[]` のPropertyChanged通知を発行し、`LocExtension` が作成したBindingを再評価します。
+`Initialize` は指定ルート直下のサブフォルダーをカルチャコードとして扱い、各フォルダー直下の `*.resx` を読み込みます。`SetCulture` は指定カルチャが不正な場合に現在のUIカルチャへ戻し、`Item[]` のPropertyChanged通知を発行します。`LocExtension` が作成したBindingはこの通知で再評価されます。コードからは、fallbackを持たない必須取得に `Require<TResource>(key)` またはプロパティ式版の `Require` を使用できます。
 
 libQB自身は組み込みresxを持たず、ResourceManagerを自動登録しません。初期化パス、ResourceManager、選択言語の保存は利用側で構成してください。
 
@@ -113,7 +116,7 @@ MahAppsダイアログを表示するには、`Application.Current.MainWindow` �
 
 1. `TWindow` を `new()` で生成します。
 2. `TViewModel` をDIから解決します。
-3. callback版では `IParameterReceiver` へ入力を渡します。
+3. 通常版の `parameter` は使用しません。callback版では `IParameterReceiver` を実装するViewModelへ入力を渡します。
 4. ViewModelをDataContextに設定します。
 5. 指定されたownerを設定して `ShowDialog()` を呼びます。
 6. callback版では、Window終了後に `IResultProvider<TResult>` から結果を取得します。

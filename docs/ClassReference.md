@@ -1,5 +1,8 @@
 # libQB リファレンス
 
+更新者：Codex
+最終更新日時：2026-09-12 14:50
+
 この文書は、libQB 2.0.0の主要な公開型と利用上の契約を機能別にまとめたものです。
 
 ## DI属性（`libQB.Attributes`）
@@ -129,7 +132,7 @@ libQB自身はResourceManagerを登録しません。`Initialize` によるデ�
 | `ResxReader` | resxの文字列data要素を辞書として読み込む |
 | `LocExtension` | `LocalizationManager` のインデクサへOneWay BindingするMarkupExtension |
 
-`LocExtension` は `Key` と `Fallback` を受け取り、`SetCulture` 時の通知で表示を再評価します。
+`LocExtension` は `Key` と `Fallback` を受け取り、`SetCulture` 時の通知で表示を再評価します。`LocalizationManager` には、ResourceManagerまたは外部パックから必須文字列を取得する `Require<TResource>(key)` とプロパティ式版の `Require` もあります。
 
 ## Settings（`libQB.Settings`）
 
@@ -162,7 +165,7 @@ Tomlynを利用する `ISettingStore<T>` 実装です。コンストラクター
 
 | 型 | Convert | ConvertBack |
 | --- | --- | --- |
-| `BaseThemeConverter` | 値とparameterの文字列表現を比較 | trueの場合にtarget Enumへ変換 |
+| `BaseThemeConverter` | 値とparameterの文字列表現を比較 | trueの場合にparameterをtarget Enumへ変換。falseの場合は `Binding.DoNothing` |
 | `IncrementConverter` | 整数値へ1を加算 | 未実装 |
 | `InverseBoolConverter` | boolを反転 | boolを反転 |
 | `TrimConverter` | 値を文字列化 | 文字列化して前後の空白を除去 |

@@ -1,5 +1,8 @@
 # libQB 概要
 
+更新者：Codex
+最終更新日時：2026-09-12 14:50
+
 ## libQBとは
 
 libQBは、Windows向けWPFアプリケーションで利用できるUI・アプリケーション基盤ライブラリです。アプリケーション固有の画面やモデルには依存せず、複数のアプリケーションで再利用しやすい共通機能を提供します。
@@ -39,6 +42,8 @@ libQBは、Windows向けWPFアプリケーションで利用できるUI・アプ
 | `MahApps.Metro.IconPacks.Material` | 6.2.1 | 共通ダイアログのアイコン |
 | `Tomlyn` | 2.10.1 | TOMLのシリアライズとデシリアライズ |
 
+Behavior実装は `Microsoft.Xaml.Behaviors` のAPIを使用します。利用側でBehaviorをXAMLへ接続する場合は、利用側ProjectのWPF／XAML依存関係も合わせて構成してください。
+
 ## 利用側で構成するもの
 
 libQBは次の機能を提供しません。必要に応じて利用側アプリケーションで構成してください。
@@ -54,7 +59,7 @@ libQBは次の機能を提供しません。必要に応じて利用側アプリ
 
 - MahAppsダイアログを表示するには、`Application.Current.MainWindow` が `MetroWindow` である必要があります。
 - ファイル／フォルダーダイアログは、キャンセル時にnullを返します。
-- `WindowService` はWindowを生成し、ViewModelのみを `IServiceProvider` から解決します。
+- `WindowService` はWindowを `new()` で生成し、ViewModelのみを `IServiceProvider` から解決します。通常の `ShowWindow` では `parameter` を使用せず、`ShowWindowWithCallback` のみ `IParameterReceiver` へ渡します。
 - `LocalizationManager` はlibQB自身のResourceManagerを自動登録しません。利用側のResourceManagerは `RegisterResourceManager` で登録してください。
 - `DialogTextProvider` の既定文言は英語です。ローカライズする場合は、利用側で各delegateを設定してください。
 - `TomlSettingStore<T>` は保存先ディレクトリを作成しません。保存前に利用側で用意してください。
