@@ -80,7 +80,11 @@ public static class ClearableComboBox
 
         clearButton.Click += (s, args) =>
         {
-            if (comboBox.Items.Count > 0)
+            if (!string.IsNullOrEmpty(comboBox.SelectedValuePath))
+            {
+                comboBox.SelectedValue = GetClearValue(comboBox);
+            }
+            else if (comboBox.Items.Count > 0)
             {
                 comboBox.SelectedIndex = 0;
             }
