@@ -1,4 +1,4 @@
-﻿namespace libQB.Settings;
+namespace libQB.Settings;
 
 // 汎用設定ストア。永続化方式(TOML等)への依存を持たない
 public interface ISettingStore<T>

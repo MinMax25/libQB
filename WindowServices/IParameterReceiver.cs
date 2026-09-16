@@ -1,4 +1,4 @@
-﻿namespace libQB.WindowServices;
+namespace libQB.WindowServices;
 
 public interface IParameterReceiver
 {

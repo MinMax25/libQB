@@ -1,4 +1,4 @@
-﻿namespace libQB.UndoRedo;
+namespace libQB.UndoRedo;
 
 public interface IUndoableAction
 {

@@ -1,4 +1,4 @@
-﻿using MahApps.Metro.Controls.Dialogs;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace libQB.DialogServices;
 

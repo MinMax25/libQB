@@ -1,4 +1,4 @@
-﻿namespace libQB.DialogServices;
+namespace libQB.DialogServices;
 
 using System.IO;
 using System.Reflection;

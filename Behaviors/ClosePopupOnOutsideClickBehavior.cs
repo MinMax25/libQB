@@ -1,4 +1,4 @@
-﻿namespace libQB.Behaviors;
+namespace libQB.Behaviors;
 
 using System.Windows;
 using System.Windows.Controls.Primitives;

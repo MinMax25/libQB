@@ -1,4 +1,4 @@
-﻿namespace libQB.Behaviors;
+namespace libQB.Behaviors;
 
 using System.Linq;
 using System.Windows;
