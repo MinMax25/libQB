@@ -38,12 +38,13 @@ public class UndoManager
         if (!CanUndo)
             return;
 
-        var action = _undoStack.Pop();
+        var action = _undoStack.Peek();
         _isExecutingUndoRedo = true;
         try
         {
             action.Undo();
             _redoStack.Push(action);
+            _undoStack.Pop();
         }
         finally
         {
@@ -57,12 +58,13 @@ public class UndoManager
         if (!CanRedo)
             return;
 
-        var action = _redoStack.Pop();
+        var action = _redoStack.Peek();
         _isExecutingUndoRedo = true;
         try
         {
             action.Redo();
             _undoStack.Push(action);
+            _redoStack.Pop();
         }
         finally
         {

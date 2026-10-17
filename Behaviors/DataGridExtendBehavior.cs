@@ -39,11 +39,11 @@ public class DataGridExtendBehavior
         DependencyProperty.Register(nameof(SelectedRows),
             typeof(IList),
             typeof(DataGridExtendBehavior),
-            new FrameworkPropertyMetadata(new List<object>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
-    public IList SelectedRows
+    public IList? SelectedRows
     {
-        get => (IList)GetValue(SelectedRowsProperty);
+        get => (IList?)GetValue(SelectedRowsProperty);
         set => SetValue(SelectedRowsProperty, value);
     }
 
@@ -89,6 +89,11 @@ public class DataGridExtendBehavior
         AssociatedObject.CellEditEnding += OnCellEditEnding;
         AssociatedObject.PreviewKeyDown += OnPreviewKeyDown;
         AssociatedObject.Sorting += OnSorting;
+
+        if (SelectedRows is null)
+        {
+            SetCurrentValue(SelectedRowsProperty, new List<object>());
+        }
 
         SelectedRows?.Clear();
     }
@@ -136,15 +141,21 @@ public class DataGridExtendBehavior
         if (e.AddedItems.Count == 0 && e.RemovedItems.Count == 0)
             return;
 
-        SelectedRows.Clear();
-        foreach (var item in AssociatedObject.SelectedItems)
+        var selectedRows = SelectedRows;
+        if (selectedRows is null)
         {
-            SelectedRows.Add(item);
+            return;
         }
 
-        if (SelectedRows.Count == 1)
+        selectedRows.Clear();
+        foreach (var item in AssociatedObject.SelectedItems)
         {
-            SelectedRow = SelectedRows[0]!;
+            selectedRows.Add(item);
+        }
+
+        if (selectedRows.Count == 1)
+        {
+            SelectedRow = selectedRows[0]!;
         }
         else
         {
@@ -153,7 +164,7 @@ public class DataGridExtendBehavior
 
         if (SelectionChangedCommand != null)
         {
-            SelectionChangedCommand?.Execute(SelectedRows.Count);
+            SelectionChangedCommand?.Execute(selectedRows.Count);
         }
     }
 
