@@ -3,10 +3,6 @@ using System.Windows.Markup;
 
 namespace libQB.Localization;
 
-// XAMLで {loc:Loc Key=libQB.Menu.File} のように使用する。
-// LocalizationManagerのインデクサへBindingすることで、言語切替(SetCulture)のたびに
-// PropertyChanged通知経由で表示中のテキストが自動的に再評価される。
-// Fallbackが未指定の場合、LocalizationManagerまたはアセンブリ内のリソースから自動補完される。
 public class LocExtension : MarkupExtension
 {
     public object? Key { get; set; }
@@ -90,7 +86,6 @@ public class LocExtension : MarkupExtension
         }
         catch
         {
-            // 失敗時は無視
         }
         return null;
     }

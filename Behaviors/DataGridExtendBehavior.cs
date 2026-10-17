@@ -192,7 +192,6 @@ public class DataGridExtendBehavior
 
         if (IsEditing && e.Key == Key.Enter)
         {
-            // 編集確定し、行移動を抑止
             AssociatedObject.CommitEdit(DataGridEditingUnit.Cell, true);
             AssociatedObject.CommitEdit(DataGridEditingUnit.Row, true);
 

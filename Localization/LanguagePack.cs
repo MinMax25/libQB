@@ -2,8 +2,6 @@ using System.IO;
 
 namespace libQB.Localization;
 
-// 外部フォルダから読み込んだ1言語分の文字列テーブル一式
-// Groups のキーはファイル名(拡張子除く)。例: "libQB.Menu", "QBTheater.Resources"
 public sealed class LanguagePack
 {
     public string Code { get; }

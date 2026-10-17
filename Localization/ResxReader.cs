@@ -2,8 +2,6 @@ using System.Xml.Linq;
 
 namespace libQB.Localization;
 
-// resxファイルからname/valueのペアのみを取り出す簡易リーダー
-// (バイナリ埋め込み等は扱わず、文字列リソースの読み込みに特化)
 public static class ResxReader
 {
     public static Dictionary<string, string> Load(string path)

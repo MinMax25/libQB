@@ -1,8 +1,5 @@
 namespace libQB.DialogServices;
 
-// 共通ダイアログ/共通コントロールが使う既定文言の差し込み口。
-// libQBはResxを持たないため、既定値は英語のハードコードとし、
-// アプリ側が起動時にLocalizationManager等を経由した関数を登録することで言語に追従させる。
 public static class DialogTextProvider
 {
     public static Func<string> OkButtonText { get; set; } = () => "OK";

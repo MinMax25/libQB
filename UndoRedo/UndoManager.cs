@@ -91,7 +91,6 @@ public static class UndoManagerExtensions
 {
     public static void Do(this IUndoManager undoManager, IUndoableAction action)
     {
-        //action.Do();
         undoManager.PushAction(action);
     }
 }

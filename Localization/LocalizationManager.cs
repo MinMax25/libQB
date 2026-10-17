@@ -6,9 +6,6 @@ using System.Resources;
 
 namespace libQB.Localization;
 
-// 組み込み言語(English/日本語)に加えて、外部フォルダに置かれた言語パックを
-// 実行時に発見・読み込みし、キー単位で文字列の上書き解決を行う。
-// インデクサ(this[fullKey])とPropertyChangedにより、言語切替をXAMLのBindingへ即時反映できる。
 public sealed class LocalizationManager : INotifyPropertyChanged
 {
     public static LocalizationManager Instance { get; } = new();
@@ -23,10 +20,8 @@ public sealed class LocalizationManager : INotifyPropertyChanged
 
     private readonly Dictionary<string, LanguagePack> _externalPacks = new();
 
-    // グループ名(例: "libQB.Menu")と、組み込みResxのResourceManagerの対応
     private readonly Dictionary<string, ResourceManager> _resourceManagers = new();
 
-    // リソース値(例: "詳細")から fullKey ("グループ名.キー名") への逆引き辞書
     private readonly Dictionary<string, string> _valueToFullKeyMap = new();
 
     private LanguagePack? _activePack;
@@ -35,8 +30,6 @@ public sealed class LocalizationManager : INotifyPropertyChanged
 
     public IReadOnlyList<LanguageInfo> AvailableLanguages { get; private set; }
 
-    // fullKey ("グループ名.キー名") やキー名、または x:Static 経由のリソース値を指定して、現在の言語での解決済み文字列を取得する。
-    // XAMLからは {loc:Loc Key=...} 経由でこのインデクサにBindingされる。
     public string? this[string keyOrValue]
     {
         get
@@ -63,13 +56,11 @@ public sealed class LocalizationManager : INotifyPropertyChanged
                 }
             }
 
-            // ピリオドを含まない場合、または x:Static 評価後の文字列値の場合
             if (_valueToFullKeyMap.TryGetValue(keyOrValue, out var resolvedFullKey))
             {
                 return this[resolvedFullKey];
             }
 
-            // キー名だけで検索を試みる
             foreach (var (grp, mgr) in _resourceManagers)
             {
                 var val = mgr.GetString(keyOrValue, _currentCulture);
@@ -88,7 +79,6 @@ public sealed class LocalizationManager : INotifyPropertyChanged
         AvailableLanguages = _builtIn;
     }
 
-    // 各プロジェクト固有の組み込みResx(例: "QBTemplate.Resources")をグループ名で登録する
     public void RegisterResourceManager(string group, ResourceManager manager)
     {
         _resourceManagers[group] = manager;
@@ -122,11 +112,9 @@ public sealed class LocalizationManager : INotifyPropertyChanged
         }
         catch
         {
-            // 無視
         }
     }
 
-    // 指定フォルダ配下のサブフォルダ(カルチャコード名)を言語パックとして読み込む
     public void Initialize(string languagesFolderPath)
     {
         _externalPacks.Clear();
@@ -165,8 +153,6 @@ public sealed class LocalizationManager : INotifyPropertyChanged
         AvailableLanguages = combined;
     }
 
-    // 現在有効な言語を切り替える(組み込み言語の場合は上書きパックなし=常にフォールバックを使用)
-    // 切替後にPropertyChangedを発行し、Bindingしている全UI要素へ即時反映する。
     public void SetCulture(string cultureCode)
     {
         _activePack = _externalPacks.TryGetValue(cultureCode, out var pack) ? pack : null;
@@ -180,11 +166,9 @@ public sealed class LocalizationManager : INotifyPropertyChanged
             _currentCulture = CultureInfo.CurrentUICulture;
         }
 
-        // インデクサ全体の再評価をWPFのBindingへ通知する(ObservableCollectionのIndexer通知と同じ手法)
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
     }
 
-    // fullKey は "グループ名.キー名" (例: "libQB.Menu.File")
     public bool TryGetOverride(string fullKey, out string? value)
     {
         value = null;
@@ -212,9 +196,6 @@ public sealed class LocalizationManager : INotifyPropertyChanged
         return false;
     }
 
-    // C#コードから利用する簡易ヘルパー。外部言語パックの上書き、無ければ組み込みResxを
-    // 現在のカルチャで参照する。どちらにも無ければ登録漏れ・typoとみなし例外を投げる
-    // (fallback文字列を重複定義させないための版)。
     private string Require(string fullKey)
     {
         if (TryGetOverride(fullKey, out var value))

@@ -50,7 +50,7 @@ public static class FocusValidationBlockBehavior
 
                 if (hasError)
                 {
-                    e.Handled = true; // フォーカス移動禁止！
+                    e.Handled = true;  
                 }
             }
         }
