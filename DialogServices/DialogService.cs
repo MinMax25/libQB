@@ -1,4 +1,4 @@
-﻿namespace libQB.DialogServices;
+namespace libQB.DialogServices;
 
 using System.IO;
 using System.Reflection;
@@ -39,13 +39,14 @@ public class DialogService
         return Task.FromResult(result ? dialog.FileName : null!);
     }
 
-    public Task<string> ShowSaveFileDialog(string? title, string? filter = "", string? path = "")
+    public Task<string> ShowSaveFileDialog(string? title, string? filter = "", string? path = "", string? suggestedFileName = "")
     {
+        var fileName = string.IsNullOrEmpty(suggestedFileName) ? FixFileName(path ?? string.Empty) : suggestedFileName;
         var dialog = new SaveFileDialog
         {
             Title = title,
             InitialDirectory = FixDirectoryName(path ?? string.Empty),
-            FileName = FixFileName(path ?? string.Empty),
+            FileName = fileName,
             Filter = filter
         };
 

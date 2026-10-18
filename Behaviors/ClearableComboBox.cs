@@ -1,4 +1,4 @@
-﻿namespace libQB.Behaviors;
+namespace libQB.Behaviors;
 
 using System.Linq;
 using System.Windows;
@@ -69,7 +69,7 @@ public static class ClearableComboBox
             Background = Brushes.Transparent,
             BorderThickness = new Thickness(0),
             Foreground = Brushes.Gray,
-            ToolTip = Properties.Dialog.Title_Command_Clear,
+            ToolTip = DialogServices.DialogTextProvider.ClearButtonTooltip(),
             Cursor = Cursors.Hand,
             VerticalAlignment = VerticalAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Right,
@@ -80,7 +80,11 @@ public static class ClearableComboBox
 
         clearButton.Click += (s, args) =>
         {
-            if (comboBox.Items.Count > 0)
+            if (!string.IsNullOrEmpty(comboBox.SelectedValuePath))
+            {
+                comboBox.SelectedValue = GetClearValue(comboBox);
+            }
+            else if (comboBox.Items.Count > 0)
             {
                 comboBox.SelectedIndex = 0;
             }

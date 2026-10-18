@@ -1,4 +1,4 @@
-﻿namespace libQB.DialogServices;
+namespace libQB.DialogServices;
 
 public interface IDialogService
 {
@@ -6,7 +6,7 @@ public interface IDialogService
 
     Task<string> ShowOpenFileDialog(string title, string filter = "", string path = "");
 
-    Task<string> ShowSaveFileDialog(string title, string filter = "", string path = "");
+    Task<string> ShowSaveFileDialog(string title, string filter = "", string path = "", string suggestedFileName = "");
 
     Task<string> ShowSelectFolderDialog(string title, string path = "");
 

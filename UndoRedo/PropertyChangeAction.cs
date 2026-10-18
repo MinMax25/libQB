@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 
 namespace libQB.UndoRedo;
 
@@ -20,10 +20,8 @@ public class PropertyChangeAction<T> : IUndoableAction
 
         var parameter = Expression.Parameter(typeof(T), "value");
 
-        // Getter
         _getter = propertyExpression.Compile();
 
-        // Setter
         var setterExpr = Expression.Lambda<Action<T>>(
             Expression.Assign(memberExpr, parameter),
             parameter
