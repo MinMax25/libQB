@@ -1,6 +1,6 @@
 # libQB
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.txt)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/MinMax25/libQB/blob/master/LICENSE.txt)
 [![.NET](https://img.shields.io/badge/.NET-10.0-blueviolet)](https://dotnet.microsoft.com/)
 [![MahApps.Metro](https://img.shields.io/badge/MahApps.Metro-2.4.11-green)](https://github.com/MahApps/MahApps.Metro)
 [![CommunityToolkit.Mvvm](https://img.shields.io/badge/MVVM%20Toolkit-8.4.2-orange)](https://github.com/CommunityToolkit/dotnet)
@@ -19,6 +19,10 @@ v1.x.xからv2.0.0への更新には破壊的変更が含まれます。既存�
 - 共通ダイアログとクリアボタンの文言は `DialogTextProvider` から取得します。ローカライズする場合は、利用側で各delegateを設定してください。
 
 v1.x.xで `libQB.Properties.Dialog`、`libQB.Properties.Menu`、`libQB.Properties.Hamburger`、`libQB.Properties.Resources` を直接参照しているコードは、そのままではビルドできません。利用側のresxまたは `LocalizationManager`／`DialogTextProvider` を使用する実装へ移行してください。
+
+また、`libQB.Enums.Languages` と `EnumDisplayTypeConverter` は削除しました。言語選択には利用側で `LanguageInfo`／`LanguagePack` または独自の言語モデルを管理し、`LocalizationManager.SetCulture` でカルチャを切り替えてください。列挙値の `DisplayAttribute.Name` を表示する場合は、利用側でその属性を読むコンバーターを用意してください。ダイアログ文言は `DialogTextProvider` で管理できます。
+
+`IDialogService.ShowSaveFileDialog` および `DialogService.ShowSaveFileDialog` は、第4引数 `suggestedFileName` を追加しました。シグネチャは `(title, filter, path, suggestedFileName)` です。既定ファイル名を指定する場合は第4引数を渡してください。
 
 ## 主な機能
 
@@ -66,4 +70,4 @@ dotnet build libQB.sln
 
 ## ライセンス
 
-このプロジェクトはMIT Licenseで提供されます。詳細は [LICENSE.txt](LICENSE.txt) を参照してください。
+このプロジェクトはMIT Licenseで提供されます。詳細は [LICENSE.txt](https://github.com/MinMax25/libQB/blob/master/LICENSE.txt) を参照してください。
